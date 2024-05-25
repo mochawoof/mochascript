@@ -27,8 +27,21 @@ function getMyBlip(id)
     local blip = 0
     repeat
         color = GET_BLIP_COLOUR(b)
-        print(color)
         if (color < 1 or color > 85 or color == 4) then
+            blip = b
+            break
+        end
+        b = GET_NEXT_BLIP_INFO_ID(id)
+    until b == 0
+    return blip
+end
+
+function getBlipByColor(id, clr)
+    local b = GET_FIRST_BLIP_INFO_ID(id)
+    local blip = 0
+    repeat
+        color = GET_BLIP_COLOUR(b)
+        if (color == clr) then
             blip = b
             break
         end
@@ -50,12 +63,19 @@ function teleportToBlip(id, name, checkIfMine, offset)
         players.teleport_3d(players.user(), pos.x + offset.x, pos.y + offset.y, pos.z + offset.z + 25)
         util.yield(800)
         players.teleport_3d(players.user(), pos.x + offset.x, pos.y + offset.y, pos.z + offset.z)
-        --menu.trigger_commands("leaveinterior")
         success = true
     else
         util.toast("Couldn't find " .. name .. "!")
     end
     return success
+end
+
+function teleportUntilExists(ids, name, checkIfMine, offset)
+    for i in ids do
+        if (teleportToBlip(ids[i], name, checkIfMine, offset)) then
+            break
+        end
+    end
 end
 
 local factEvery = 1000 * 60 * 10
@@ -85,18 +105,27 @@ end)
 local online = menu.my_root():list("Online")
 
 online:list_action("Teleport", {}, "", {
+    {0, "Waypoint", {}, "Identical to World > Places > Teleport To... > Waypoint. Here for convenience."},
     {1, "Yacht"},
     {2, "Nightclub"},
     {3, "Office"},
     {4, "Auto shop"},
     {5, "Salvage yard"},
-    {6, "Hangar"},
-    {7, "Gun van", {}, "Only works after you've found the gun van."},
-    {8, "Business battle"},
-    {9, "Beast", {}, "Only works when the Beast's blip is visible."},
+    {6, "Kosatska"},
+    {7, "Hangar"},
+    {8, "Gun van", {}, "Only works after you've found the gun van."},
+    {9, "Business battle"},
+    {10, "Beast", {}, "Only works when the Beast's blip is visible."},
+    {11, "Castle"},
+    {12, "Hot property"},
+    {13, "Stash house"},
+    {14, "G's cache"}
 }, function(value, menu_name, click_type)
     local kindaUp = v3.new(0, 0, 3)
     switch value do
+        case 0:
+            menu.trigger_commands("tpwaypoint")
+            break
         case 1:
             teleportToBlip(455, menu_name, true, kindaUp)
             break
@@ -113,24 +142,35 @@ online:list_action("Teleport", {}, "", {
             teleportToBlip(867, menu_name, true, kindaUp)
             break
         case 6:
-            teleportToBlip(569, menu_name, true, kindaUp)
+            teleportToBlip(760, menu_name, true, kindaUp)
             break
         case 7:
-            teleportToBlip(844, menu_name, false, kindaUp)
+            teleportToBlip(569, menu_name, true, kindaUp)
             break
         case 8:
-            teleportToBlip(615, menu_name, false, kindaUp)
+            teleportToBlip(844, menu_name, false, kindaUp)
             break
         case 9:
+            teleportToBlip(615, menu_name, false, kindaUp)
+            break
+        case 10:
             teleportToBlip(442, menu_name, false, kindaUp)
+            break
+        case 11:
+            teleportToBlip(438, menu_name, false, kindaUp)
+            break
+        case 12:
+            teleportToBlip(436, menu_name, false, kindaUp)
+            break
+        case 13:
+            teleportToBlip(845, menu_name, false, kindaUp)
+            break
+        case 14:
+            teleportToBlip(842, menu_name, false, kindaUp)
             break
     end
 end)
 
-local chatList = online:list("Chat")
+local chatList = online:list("Chat (reworking soon)")
 
-chatList:toggle_loop("Cat facts", {}, "Chats a new fact every " .. factEveryMins .. " minutes.", function()
-    chatRandom("Cat fact: ", catFacts)
-end)
-
-menu.my_root():hyperlink("v1.1", "https://github.com/mochawoof/mochascript")
+menu.my_root():hyperlink("v1.3 pre", "https://github.com/mochawoof/mochascript")
