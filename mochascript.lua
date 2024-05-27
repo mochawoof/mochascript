@@ -22,47 +22,45 @@ function split(str, delim)
     return t
 end
 
-function getMyBlip(id)
+function getBlipByColors(id, colors)
     local b = GET_FIRST_BLIP_INFO_ID(id)
     local blip = 0
     repeat
         color = GET_BLIP_COLOUR(b)
-        if (color < 1 or color > 85 or color == 4) then
-            blip = b
-            break
+        if (colors[1] == -1) then
+            if (color < 1 or color > 85 or color == 4) then
+                blip = b
+                break
+            end
+        else
+            for i in colors do
+                print(i)
+                if (color == i) then
+                    blip = b
+                    break
+                end
+            end
         end
         b = GET_NEXT_BLIP_INFO_ID(id)
     until b == 0
     return blip
 end
 
-function getBlipByColor(id, clr)
-    local b = GET_FIRST_BLIP_INFO_ID(id)
-    local blip = 0
-    repeat
-        color = GET_BLIP_COLOUR(b)
-        if (color == clr) then
-            blip = b
-            break
-        end
-        b = GET_NEXT_BLIP_INFO_ID(id)
-    until b == 0
-    return blip
-end
-
-function teleportToBlip(id, name, checkIfMine, offset)
+function teleportToBlip(id, name, allowedColors, offset)
     local success = false
     local blip = 0
-    if (checkIfMine) then
-        blip = getMyBlip(id)
+    if (allowedColors ~= nil) then
+        blip = getBlipByColors(id, allowedColors)
     else
         blip = GET_FIRST_BLIP_INFO_ID(id)
     end
     if (blip != 0) then
         local pos = GET_BLIP_INFO_ID_COORD(blip)
+        menu.trigger_commands("levitate")
         players.teleport_3d(players.user(), pos.x + offset.x, pos.y + offset.y, pos.z + offset.z + 25)
-        util.yield(800)
+        util.yield(500)
         players.teleport_3d(players.user(), pos.x + offset.x, pos.y + offset.y, pos.z + offset.z)
+        menu.trigger_commands("levitate")
         success = true
     else
         util.toast("Couldn't find " .. name .. "!")
@@ -89,6 +87,31 @@ function chatRandom(prefix, src)
     end
 end
 
+--Start making menus
+local BLIPS = {
+    yacht = 455,
+    nightclub = 614,
+    office = 475,
+    autoShop = 779,
+    salvageYard = 867,
+    kosatska = 760,
+    hangar = 569,
+
+    clothesStore = 73,
+    gunVan = 844,
+    stashHouse = 845,
+    gsCache = 842,
+
+    businessBattle = 615,
+    beast = 442,
+    castle = 438,
+    hotProperty = 436
+}
+
+local kindaUp = v3.new(0, 0, 2)
+local zero = v3.new(0, 0, 0)
+local myColors = {-1}
+
 local myself = menu.my_root():list_action("Self", {}, "", {
     {1, "Copy my position"},
 }, function(value, menu_name, click_type)
@@ -102,75 +125,94 @@ local myself = menu.my_root():list_action("Self", {}, "", {
     end
 end)
 
-local online = menu.my_root():list("Online")
-
-online:list_action("Teleport", {}, "", {
-    {0, "Waypoint", {}, "Identical to World > Places > Teleport To... > Waypoint. Here for convenience."},
-    {1, "Yacht"},
-    {2, "Nightclub"},
-    {3, "Office"},
-    {4, "Auto shop"},
-    {5, "Salvage yard"},
-    {6, "Kosatska"},
-    {7, "Hangar"},
-    {8, "Gun van", {}, "Only works after you've found the gun van."},
-    {9, "Business battle"},
-    {10, "Beast", {}, "Only works when the Beast's blip is visible."},
-    {11, "Castle"},
-    {12, "Hot property"},
-    {13, "Stash house"},
-    {14, "G's cache"}
+local teleport = menu.my_root():list_action("Teleport", {}, "", {
+    {0, "Waypoint", {}, "Stand built-in command. Copied here for convenience."}
 }, function(value, menu_name, click_type)
-    local kindaUp = v3.new(0, 0, 3)
     switch value do
         case 0:
             menu.trigger_commands("tpwaypoint")
             break
+    end
+end)
+
+teleport:list_action("My properties", {}, "", {
+    {0, "Yacht"},
+    {1, "Nightclub"},
+    {2, "Office"},
+    {3, "Auto shop"},
+    {4, "Salvage yard"},
+    {5, "Kosatska"},
+    {6, "Hangar"},
+}, function(value, menu_name, click_type)
+    switch value do
+        case 0:
+            teleportToBlip(BLIPS.yacht, menu_name, myColors, kindaUp)
+            break
         case 1:
-            teleportToBlip(455, menu_name, true, kindaUp)
+            teleportToBlip(BLIPS.nightclub, menu_name, myColors, kindaUp)
             break
         case 2:
-            teleportToBlip(614, menu_name, true, kindaUp)
+            teleportToBlip(BLIPS.office, menu_name, myColors, kindaUp)
             break
         case 3:
-            teleportToBlip(475, menu_name, true, kindaUp)
+            teleportToBlip(BLIPS.autoShop, menu_name, myColors, kindaUp)
             break
         case 4:
-            teleportToBlip(779, menu_name, true, kindaUp)
+            teleportToBlip(BLIPS.salvageYard, menu_name, myColors, kindaUp)
             break
         case 5:
-            teleportToBlip(867, menu_name, true, kindaUp)
+            teleportToBlip(BLIPS.kosatska, menu_name, myColors, kindaUp)
             break
         case 6:
-            teleportToBlip(760, menu_name, true, kindaUp)
-            break
-        case 7:
-            teleportToBlip(569, menu_name, true, kindaUp)
-            break
-        case 8:
-            teleportToBlip(844, menu_name, false, kindaUp)
-            break
-        case 9:
-            teleportToBlip(615, menu_name, false, kindaUp)
-            break
-        case 10:
-            teleportToBlip(442, menu_name, false, kindaUp)
-            break
-        case 11:
-            teleportToBlip(438, menu_name, false, kindaUp)
-            break
-        case 12:
-            teleportToBlip(436, menu_name, false, kindaUp)
-            break
-        case 13:
-            teleportToBlip(845, menu_name, false, kindaUp)
-            break
-        case 14:
-            teleportToBlip(842, menu_name, false, kindaUp)
+            teleportToBlip(BLIPS.hangar, menu_name, myColors, kindaUp)
             break
     end
 end)
 
-local chatList = online:list("Chat (reworking soon)")
+teleport:list_action("Stuff", {}, "", {
+    {0, "Clothes store"},
+    {1, "Gun van", {}, "Only works after you've found the gun van."},
+    {2, "Stash house"},
+    {3, "G's cache"}
+}, function(value, menu_name, click_type)
+    switch value do
+        case 0:
+            teleportToBlip(BLIPS.clothesStore, menu_name, nil, kindaUp)
+            break
+        case 1:
+            teleportToBlip(BLIPS.gunVan, menu_name, nil, kindaUp)
+            break
+        case 2:
+            teleportToBlip(BLIPS.stashHouse, menu_name, nil, kindaUp)
+            break
+        case 3:
+            teleportToBlip(BLIPS.gsCache, menu_name, nil, kindaUp)
+            break
+    end
+end)
 
-menu.my_root():hyperlink("v1.3 pre", "https://github.com/mochawoof/mochascript")
+teleport:list_action("Events", {}, "", {
+    {0, "Business battle"},
+    {1, "Beast", {}, "Only works when the Beast's blip is visible."},
+    {2, "Castle"},
+    {3, "Hot property"}
+}, function(value, menu_name, click_type)
+    switch value do
+        case 0:
+            teleportToBlip(BLIPS.businessBattle, menu_name, nil, zero)
+            break
+        case 1:
+            teleportToBlip(BLIPS.beast, menu_name, nil, kindaUp)
+            break
+        case 2:
+            teleportToBlip(BLIPS.castle, menu_name, nil, kindaUp)
+            break
+        case 3:
+            teleportToBlip(BLIPS.hotProperty, menu_name, nil, kindaUp)
+            break
+    end
+end)
+
+local chatList = menu.my_root():list("Chat (reworking soon)")
+
+menu.my_root():hyperlink("v1.3", "https://github.com/mochawoof/mochascript")
