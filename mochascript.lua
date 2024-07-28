@@ -95,6 +95,7 @@ end
 
 --Start making menus
 local BLIPS = {
+    garage = 357,
     yacht = 455,
     nightclub = 614,
     office = 475,
@@ -103,6 +104,8 @@ local BLIPS = {
     kosatska = 760,
     hangar = 569,
     clubhouse = 492,
+    bunker = 557,
+    facility = 590,
 
     clothesStore = 73,
     ammuNation = 110,
@@ -113,12 +116,16 @@ local BLIPS = {
     stashHouse = 845,
     gsCache = 842,
     LSCarMeet = 777,
+    casino = 679,
+    casinoAlt = 878,
 
     businessBattle = 615,
     beast = 442,
     castle = 438,
+    castleTaken = 439,
     hotProperty = 436,
-    targetEnemy = 630
+    robberyTask = 784,
+    robberyTaskAlt = 868
 }
 
 local kindaUp = v3.new(0, 0, 2)
@@ -157,39 +164,51 @@ local teleport = menu.my_root():list_action("Teleport", {}, "", {
 end)
 
 teleport:list_action("My properties", {}, "", {
-    {0, "Yacht"},
-    {1, "Nightclub"},
-    {2, "Office"},
-    {3, "Auto shop"},
-    {4, "Salvage yard"},
-    {5, "Kosatska"},
-    {6, "Hangar"},
-    {7, "Clubhouse"}
+    {0, "Garage"},
+    {1, "Yacht"},
+    {2, "Nightclub"},
+    {3, "Office"},
+    {4, "Auto shop"},
+    {5, "Salvage yard"},
+    {6, "Kosatska"},
+    {7, "Hangar"},
+    {8, "Clubhouse"},
+    {9, "Bunker"},
+    {10, "Facility"}
 }, function(value, menu_name, click_type)
     switch value do
         case 0:
-            teleportToBlip(BLIPS.yacht, menu_name, myColors, kindaUp)
+            teleportToBlip(BLIPS.garage, menu_name, myColors, kindaUp)
             break
         case 1:
-            teleportToBlip(BLIPS.nightclub, menu_name, myColors, kindaUp)
+            teleportToBlip(BLIPS.yacht, menu_name, myColors, kindaUp)
             break
         case 2:
-            teleportToBlip(BLIPS.office, menu_name, myColors, kindaUp)
+            teleportToBlip(BLIPS.nightclub, menu_name, myColors, kindaUp)
             break
         case 3:
-            teleportToBlip(BLIPS.autoShop, menu_name, myColors, kindaUp)
+            teleportToBlip(BLIPS.office, menu_name, myColors, kindaUp)
             break
         case 4:
-            teleportToBlip(BLIPS.salvageYard, menu_name, myColors, kindaUp)
+            teleportToBlip(BLIPS.autoShop, menu_name, myColors, kindaUp)
             break
         case 5:
-            teleportToBlip(BLIPS.kosatska, menu_name, myColors, kindaUp)
+            teleportToBlip(BLIPS.salvageYard, menu_name, myColors, kindaUp)
             break
         case 6:
-            teleportToBlip(BLIPS.hangar, menu_name, myColors, kindaUp)
+            teleportToBlip(BLIPS.kosatska, menu_name, myColors, kindaUp)
             break
         case 7:
+            teleportToBlip(BLIPS.hangar, menu_name, myColors, kindaUp)
+            break
+        case 8:
             teleportToBlip(BLIPS.clubhouse, menu_name, myColors, kindaUp)
+            break
+        case 9:
+            teleportToBlip(BLIPS.bunker, menu_name, myColors, kindaUp)
+            break
+        case 10:
+            teleportToBlip(BLIPS.facility, menu_name, myColors, kindaUp)
             break
     end
 end)
@@ -203,7 +222,8 @@ teleport:list_action("Stuff", {}, "", {
     {5, "Gun van", {}, "Only works after you've found the gun van."},
     {6, "Stash house"},
     {7, "G's cache"},
-    {8, "LS car meet"}
+    {8, "LS car meet"},
+    {9, "Casino"}
 }, function(value, menu_name, click_type)
     switch value do
         case 0:
@@ -233,6 +253,12 @@ teleport:list_action("Stuff", {}, "", {
         case 8:
             teleportToBlip(BLIPS.LSCarMeet, menu_name, nil, kindaUp)
             break
+        case 9:
+            r = teleportToBlip(BLIPS.casino, menu_name, nil, v3.new(-4, 4, 0))
+            if (r == false) then
+                teleportToBlip(BLIPS.casinoAlt, menu_name, nil, v3.new(-4, 4, 0))
+            end
+            break
     end
 end)
 
@@ -241,7 +267,7 @@ teleport:list_action("Events", {}, "", {
     {1, "Beast", {}, "Only works when the Beast's blip is visible."},
     {2, "Castle"},
     {3, "Hot property"},
-    {4, "Target (enemy)"}
+    {4, "Robbery Task"}
 }, function(value, menu_name, click_type)
     switch value do
         case 0:
@@ -251,17 +277,23 @@ teleport:list_action("Events", {}, "", {
             teleportToBlip(BLIPS.beast, menu_name, nil, kindaUp)
             break
         case 2:
-            teleportToBlip(BLIPS.castle, menu_name, nil, kindaUp)
+            r = teleportToBlip(BLIPS.castle, menu_name, nil, kindaUp)
+            if (r == false) then
+                teleportToBlip(BLIPS.castleTaken, menu_name, nil, kindaUp)
+            end
             break
         case 3:
             teleportToBlip(BLIPS.hotProperty, menu_name, nil, kindaUp)
             break
         case 4:
-            teleportToBlip(BLIPS.targetEnemy, menu_name, nil, kindaUp)
+            r = teleportToBlip(BLIPS.robberyTask, menu_name, nil, kindaUp)
+            if (r == false) then
+                r = teleportToBlip(BLIPS.robberyTaskAlt, menu_name, nil, kindaUp)
+            end
             break
     end
 end)
 
-local chatList = menu.my_root():list("Chat (reworking soon)")
+--local chatList = menu.my_root():list("Chat (reworking soon)")
 
-menu.my_root():hyperlink("v1.4", "https://github.com/mochawoof/mochascript")
+menu.my_root():hyperlink("v1.5", "https://github.com/mochawoof/mochascript")
