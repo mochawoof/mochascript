@@ -95,6 +95,7 @@ end
 
 --Start making menus
 local BLIPS = {
+    -- My properties
     garage = 357,
     yacht = 455,
     nightclub = 614,
@@ -107,6 +108,7 @@ local BLIPS = {
     bunker = 557,
     facility = 590,
 
+    -- Stuff
     clothesStore = 73,
     ammuNation = 110,
     LSCustoms = 72,
@@ -118,7 +120,9 @@ local BLIPS = {
     LSCarMeet = 777,
     casino = 679,
     casinoAlt = 878,
+    arenaWorkshop = 643,
 
+    -- Events
     businessBattle = 615,
     beast = 442,
     castle = 438,
@@ -223,7 +227,8 @@ teleport:list_action("Stuff", {}, "", {
     {6, "Stash house"},
     {7, "G's cache"},
     {8, "LS car meet"},
-    {9, "Casino"}
+    {9, "Casino"},
+    {10, "Arena workshop"}
 }, function(value, menu_name, click_type)
     switch value do
         case 0:
@@ -258,6 +263,9 @@ teleport:list_action("Stuff", {}, "", {
             if (r == false) then
                 teleportToBlip(BLIPS.casinoAlt, menu_name, nil, v3.new(-4, 4, 0))
             end
+            break
+        case 10:
+            teleportToBlip(BLIPS.arenaWorkshop, menu_name, nil, kindaUp)
             break
     end
 end)
@@ -296,4 +304,4 @@ end)
 
 --local chatList = menu.my_root():list("Chat (reworking soon)")
 
-menu.my_root():hyperlink("v1.5", "https://github.com/mochawoof/mochascript")
+menu.my_root():hyperlink("v1.6", "https://github.com/mochawoof/mochascript")
